@@ -2,6 +2,9 @@
 
 *reference manuscript, dates, authors, and copywrites
 
+Dependencies:
+- CVX Matlab package: http://cvxr.com/cvx/
+
 We recommend working through the scripts in this order:
 1)	GenSimSpikeData_script
 2)	ParameterSelection_script
