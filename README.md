@@ -7,6 +7,7 @@ We recommend working through the scripts in this order:
 2)	ParameterSelection_script
 3)	RunModel_script
 
+Contents:
 GenSimSpikeData_script: Script to generate and plot simulated spike rate timeseries 
 wavelet_decomp_L2norm: Function that runs wavelet transform and calculate L2 norm
 BPDN_fullSetup: Wrapper for functions that setup inputs to method (sampling vector, bases, etc.)
