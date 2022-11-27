@@ -1,4 +1,4 @@
-%% Generate simulated data: One year spike rate timeseries
+%% DESCRIPTION: Generate and plot simulated data - one year spike rate timeseries
 
 % DEFINE BASIC PARAMETERS + PATHS
 dest = [];
