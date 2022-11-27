@@ -1,4 +1,4 @@
-% IB 7/26/22
+%%% DESCRIPTION: Function to define frequencies represented in DCT basis
 
 % INPUT
 % N = number of points
@@ -20,25 +20,24 @@
 % different function of frequency spacing. Here we have chosen linspace at
 % varying sub-ranges of the default basis. 
 
-% APPROACH 1: fullrange. minperiod:maxperiod linspaced
-% -> BPDN with this frequency vector is trash. Don't use. Orthogonality of
-% basis is lost.
+% APPROACH 1: 'fullrange' - minperiod:maxperiod linspaced 
+% Note: Orthogonality of basis is lost. Not recommended. 
 
-% APPROACH 2: subrange. take default f, then linspace a subrange of it to
+% APPROACH 2: 'subrange' - take default f, then linspace a subrange of it to
 % improve resolution around that frequency. 
-% -> Much better, though requires some tuning in simulation depending on
+% Note: Much better than approach 1, though requires some tuning in simulation depending on
 % frequencies of interest. 
 
-% APPROACH 3: densesubrange.  take default f, then linspace a subrange of it to
-% improve resolution around that frequency but more densely - increase
+% APPROACH 3: 'densesubrange' - take default f, then linspace a subrange of it to
+% improve resolution around that frequency but more densely. Increase
 % resolution in subrange by factor of 3 at expense of random cutting some
 % representation from the highest frequency end.
-% -> Comparable to approach 2. Preferred method. 
+% Note: Comparable to approach 2. Preferred method. 
 
-function [f_k, desiredperioddays] = frequency_sampling(N,maxperiod, minperiod, dt, sampletype)
+function [f_k, desiredperioddays] = frequency_sampling(N, maxperiod, minperiod, dt, sampletype)
     
     fs = 1/dt;
-    % APPROACH 1: Linspace entire range of interest -> 
+    % APPROACH 1: Linspace entire range of interest 
     if strcmp(sampletype,'fullrange') == 1
         
         desiredperioddays = linspace(maxperiod, minperiod, N);
@@ -63,15 +62,15 @@ function [f_k, desiredperioddays] = frequency_sampling(N,maxperiod, minperiod, d
         p_insert = linspace(maxperiod, minperiod, i2-i1+1);
         desiredperioddays = p_default;
         desiredperioddays(i1:i2) = p_insert;
-        f_k =  2*N ./ (desiredperioddays * fs *24 * 60 * 60);
+        f_k =  2 * N ./ (desiredperioddays * fs * 24 * 60 * 60);
         
 
-    % APPROACH 3:
+    % APPROACH 3: Linspace sub-range of interest, increase resolution by 3
     elseif strcmp(sampletype, 'densesubrange') == 1
         
         f_default = fs * (1:N) ./ (2*N);
         p = 1./f_default; % convert frequency to period
-        p_default = p ./ (24*60*60); % convert seconds to days
+        p_default = p ./ (24 * 60 * 60); % convert seconds to days
         
         if minperiod < min(p_default)
             error('min period is below default period range')
@@ -86,10 +85,10 @@ function [f_k, desiredperioddays] = frequency_sampling(N,maxperiod, minperiod, d
         if length(i2) == 0
             error('minperiod not present in default reference frequency vector')
         end 
-        p_insert = linspace(maxperiod, minperiod, (i2-i1+1) *3);        
+        p_insert = linspace(maxperiod, minperiod, (i2-i1+1)*3);        
         desiredperioddays = horzcat(p_default(1:i1), p_insert, p_default(i2:end)); % slice in the p_insert
         
-%         % Cut out bottom end VERSION 1
+%         % Cut out bottom end VERSION 1 *** remove?
 %         desiredperioddays = desiredperioddays(1:length(p_default));
         
         % Cut random bits from bottom two thirds VERSION 2
@@ -98,7 +97,7 @@ function [f_k, desiredperioddays] = frequency_sampling(N,maxperiod, minperiod, d
         desiredperioddays(toremove) = [];
         
   
-        f_k =  2*N ./ (desiredperioddays * fs *24 * 60 * 60);
+        f_k =  2 * N ./ (desiredperioddays * fs * 24 * 60 * 60);
         
      
     end 
