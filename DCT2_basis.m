@@ -1,4 +1,4 @@
-% IB 7/26/22
+% DESCRIPTION: Function to create DCT-II basis based on N and defined frequencies
 
 % INPUT
 % N = number of points
@@ -6,10 +6,10 @@
 % should be pre-converted. Normally, k = 0:N-1 for example....
 
         % desiredperioddays = linspace(maxperiod, minperiod, N);
-        % f_k = 2*N ./ (desiredperioddays * fs *24 * 60 * 60);
+        % f_k = 2 * N ./ (desiredperioddays * fs * 24 * 60 * 60);
 
 % OUTPUT
-% basis = NxN dct-II basis based on frequency vector. Used same expression 
+% basis = N x N dct-II basis based on frequency vector. Used same expression 
         % as Matlab: https://www.mathworks.com/help/signal/ref/dct.html
 
 % NOTE
@@ -31,14 +31,14 @@ function [basis, scalefactor] = DCT2_basis(N, f_k)
         ks = zeros(1,size(A,2));
         for k = 1:length(f_k)
 
-            if k == 1 % matlab's kroeneker delta function was a pain
+            if k == 1 
                     filler = 1;
             elseif k ~= 1
                     filler = 0;
             end
 
             n = 1:N;
-            per_k= tempdat.*(1/sqrt(1+filler)).*cos( (pi/(2*N)) * (2.*(n) -1) * (f_k(k)-1)); 
+            per_k= tempdat.*(1/sqrt(1+filler)).*cos((pi/(2*N)) * (2.*(n)-1) * (f_k(k)-1)); 
             ks(k) = sqrt(2/N).*sum(per_k);  
 
         end 
