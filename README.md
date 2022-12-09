@@ -4,6 +4,7 @@
 
 Dependencies:
 - CVX Matlab package: http://cvxr.com/cvx/
+- Matlab Wavelet toolbox: https://www.mathworks.com/products/wavelet.html
 
 We recommend working through the scripts in this order:
 1)	GenSimSpikeData_script
