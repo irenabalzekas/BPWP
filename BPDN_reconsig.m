@@ -1,9 +1,7 @@
-% reconstruct signal - custom idct plus polynomial representation
-
-
+% DESCRIPTION: Function to reconstruct timedomain signal based on BDPN outputs
+% Custom idct plus polynomial representation
 
 function [reconsig] = BPDN_reconsig(f_k, x, scalefactor, maxdegree, z, t_full)
-
 
     recon_osc = idct_custom(f_k, x, scalefactor); % custom function to do idct based on f_k, matlab idct would give different output. 
     polycomp = [];
@@ -12,6 +10,4 @@ function [reconsig] = BPDN_reconsig(f_k, x, scalefactor, maxdegree, z, t_full)
     end 
     reconsig = recon_osc + sum(z.*polycomp);
 
-
 end
-
