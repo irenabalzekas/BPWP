@@ -1,4 +1,4 @@
-%% Run BPDN with optimal delta, significance testing and CWT reference included
+%% DESCRIPTION: Run BPDN on simulated data with optimal delta parameter, test output for significance, plot overall outputs
 
 subjects = {'S1'};
 loc = [];
@@ -95,9 +95,9 @@ end
 %% Plot overall model outputs - spectra, reconstructions, etc. 
 
 % INCLUDED IN PLOT 
-% OG data
-% spectrogram of OG data
-% wavelet spec of OG data
+% original data
+% spectrogram of original data
+% wavelet spec of original data
 % subsampling of og data samples
 % BPDN-based reconstruction
 % cwt over BPDN spectral comparison
@@ -124,7 +124,7 @@ x = deltaselection.fig.x;
 sighits = deltaselection.fig.sighits;
 perioddays_cwt = deltaselection.fig.perioddays_cwt;
 meanpowerCWTreg = deltaselection.fig.meanpowerCWTreg;
-power = zscore(abs(deltaselection.fig.WT)); % MIGHT GO BACK AND RESCALE
+power = zscore(abs(deltaselection.fig.WT)); 
 wave_fam = 1./deltaselection.fig.fwt;
 fs = 1 / deltaselection.dt;
 
@@ -134,24 +134,21 @@ fsize = 10;
 
 % PART 1: BASIC RAW DATA AND CWT SPECTROGRAM 
 
-% original''; signal 
+% original signal 
 subplot(4,6,[1,2,3,4])
 plot(time_full_days,signal, 'Color','black','DisplayName','raw data')
 ylabel('Spike rate')
-%     title(strcat(subject,{' '},'raw spike rate'))
 xlim([0 max(time_full_days)])
 colorbar()
-% ylim([0 max(signal) + 2000])
-% legend()
 ax=gca; ax.YAxis.Exponent = 3;
 set(gca,'FontSize',fsize)
 
 % spectrogram for cwt
 subplot(4,6,[7,8,9,10])
 contourf(time_full_days, log(perioddays_cwt), power,'edgecolor','none')
-% xlabel('Time (days)')
+xlabel('Time (days)')
 ylabel('Period (days)')
-%     title({'';'Spectrogram, CWT of raw spike rate'})
+title({'';'Spectrogram, CWT of raw spike rate'})
 xlim([0 max(time_full_days)])
 logged = log(perioddays_cwt);
 inds = [49,98];
@@ -173,7 +170,7 @@ for nn = 1: length(deltaselection.sampperdays)
     CI95 = tinv([0.025 0.975], (size(dat,1)-1)); % Calculate 95% Probability Intervals Of t-Distribution
     yCI95 = bsxfun(@times, ySEM, CI95(:)); % Calculate 95% Confidence Intervals Of All Experiments At Each Value Of ‘x’
 
-    %plot(x, yCI95+yMean, 'Color','blue') % Plot 95% Confidence Intervals Of All Experiments
+    plot(x, yCI95+yMean, 'Color','blue') % Plot 95% Confidence Intervals Of All Experiments
     CIs = yCI95+yMean;
     curve1 = CIs(1,:);
     curve2 = CIs(2,:);
@@ -194,7 +191,7 @@ set(gca,'FontSize',fsize)
 
 % PART 2: BPDN SAMPLES AND MODEL OUTPUT
 
-% original''; signal with samples
+% original signal with samples
 subplot(4,6,[13,14,15,16])
 % plot(time_full_days,signal, 'Color','black', 'DisplayName','raw data')
 % hold on
