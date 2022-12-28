@@ -1,7 +1,7 @@
+% DESCRIPTION: Re-sample continuous timeseries to get sparse training sets
+% Variables: drop - percent to drop
 
-% drop - percent to drop
-
-function [measureddata_init, t_init, phi_init, training_md, training_t, training_phi, testing_md, testing_t, testing_phi] = BPDN_samplerealdata_traintest(signal,time,numsamp, dt, drop, numrepeats)
+function [measureddata_init, t_init, phi_init, training_md, training_t, training_phi, testing_md, testing_t, testing_phi] = BPDN_samplerealdata_traintest(signal, time, numsamp, dt, drop, numrepeats)
     
     % CREATE REFERENCE/BASE SIG
     numsamp_full = round(numsamp * (1+drop/100));
@@ -18,15 +18,14 @@ function [measureddata_init, t_init, phi_init, training_md, training_t, training
             numsampnew = numsamp_full;
         end
         totind = sort(datasample(1:length(signal), numsampnew, 'Replace',false)); % randomly sample the full seconds timeseries
-%         end 
         measureddata_init = signal(totind);
         t_init = time(totind);
         phi_init = round((t_init-min(time))/dt) + 1;  
     end 
-    % once long enough, pull unqiue and cut excess.
-    [~,indlocs] = ismember(unique(phi_init), phi_init);
+    % once long enough, pull unqiue and cut excess
+    [~, indlocs] = ismember(unique(phi_init), phi_init);
     % remove excess samples randomly
-    tocut = sort(datasample(1:length(indlocs), length(indlocs) - numsamp_full, 'Replace',false)); % randomly sample the full seconds timeseries
+    tocut = sort(datasample(1:length(indlocs), length(indlocs) - numsamp_full, 'Replace', false)); % randomly sample the full seconds timeseries
     indlocs(tocut) = [];
     
     % BASE SIG DEFINED
@@ -34,7 +33,7 @@ function [measureddata_init, t_init, phi_init, training_md, training_t, training
     t_init = t_init(indlocs);
     phi_init = phi_init(indlocs);
     
-    % NOW RANDOMLY SUBSAMPLE THE BASE SIG. 
+    % NOW RANDOMLY SUBSAMPLE THE BASE SIG
     training_md = [];
     training_t = [];
     training_phi = [];
@@ -45,8 +44,8 @@ function [measureddata_init, t_init, phi_init, training_md, training_t, training
     for i = 1:numrepeats
         
         % Randomly sample subset of data 
-        trainind = sort(datasample(1:length(measureddata_init), numsamp, 'Replace',false)); % randomly sample the full seconds timeseries
-        testind =  setdiff(find(1:length(measureddata_init)),trainind);
+        trainind = sort(datasample(1:length(measureddata_init), numsamp, 'Replace', false)); % randomly sample the full seconds timeseries
+        testind =  setdiff(find(1:length(measureddata_init)), trainind);
 
         % Define training and testing blocks 
         training_md(i,:) = measureddata_init(trainind);
@@ -58,6 +57,5 @@ function [measureddata_init, t_init, phi_init, training_md, training_t, training
         testing_phi(i,:) = phi_init(testind);
 
     end 
-
-    
+ 
 end
