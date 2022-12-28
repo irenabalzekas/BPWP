@@ -193,59 +193,57 @@ set(gca,'FontSize',fsize)
 
 % original signal with samples
 subplot(4,6,[13,14,15,16])
-% plot(time_full_days,signal, 'Color','black', 'DisplayName','raw data')
-% hold on
+plot(time_full_days,signal, 'Color','black', 'DisplayName','raw data')
+hold on
 plot(t_days, measureddata_wds,'.','Color','black', 'DisplayName','sparse samples','MarkerSize',2.5)
-%     if s == length(subjects)
-%         xlabel('Time (days)')
-%     end
+xlabel('Time (days)')
 ylabel('Spike rate')
-%     title({'';''})
+title({'';''})
 xlim([0 max(time_full_days)])
 ax=gca; ax.YAxis.Exponent = 3;
 colorbar()
-% ylim([0 max(signal) + 2000])
-% legend()
+ylim([0 max(signal) + 2000])
+legend()
 set(gca,'FontSize',fsize)
 
 % recon overlayed on original signal (or recon alone)
 subplot(4,6,[19,20,21,22])
-%     plot(time_full_days,signal, 'Color','black','DisplayName','raw data')
-%     hold on
+plot(time_full_days,signal, 'Color','black','DisplayName','raw data')
+hold on
 plot(t_recon_days, reconsig_wds,'Color',[0.8500 0.3250 0.0980],'DisplayName','BPDN recon')
-% xlabel('Time (days)')
+xlabel('Time (days)')
 ylabel('Spike rate')
 xlim([0 max(time_full_days)])
-%     title({'';'Reconstructed signal, BPDN'})
+title({'';'Reconstructed signal, BPDN'})
 ax=gca; ax.YAxis.Exponent = 3;
 xlim([0 max(time_full_days)])
-% ylim([0 max(reconsig_wds) + 1000])
-% legend()
+ylim([0 max(reconsig_wds) + 1000])
+legend()
 colorbar()
 set(gca,'FontSize',fsize)
 
 % overlay BPDN and CWT spectra
 subplot(4,6,[17,18,23,24])
+
 % spectrum for BPDN
 yyaxis right
+
 % no rescaling
 plot(desiredperioddays, x.^2, 'Color',[0.8500 0.3250 0.0980], 'LineWidth',1);
 hold on
 plot(desiredperioddays(sighits),x(sighits).^2,'*','Color','black','MarkerSize',4)
-% xlabel('Period (days)')
+xlabel('Period (days)')
 ylabel('Power, BPDN')
 set(gca,'FontSize',fsize)
 
 % spectrum for cwt
 yyaxis left
 plot(perioddays_cwt, meanpowerCWTreg, 'Color',[0 0 0 0.3], 'LineWidth',1.5); % blue color with 0.6 alpha
-% hold on
-% plot(perioddays_cwt(locs),pks,'Color','cyan','o', 'MarkerSize',2)
+hold on
+plot(perioddays_cwt(locs),pks,'Color','cyan','o', 'MarkerSize',2)
 xlabel('Period (days)')
 ylabel({'';'';'Power,CWT'})
-%     title('BPDN and CWT spectra')
+title('BPDN and CWT spectra')
 ax=gca; ax.YAxis(1).Exponent = 5; ax.YAxis(1).Color = 'black';
 xlim([-10 max(perioddays_cwt)])
 set(gca,'FontSize',fsize)
-
-
