@@ -1,12 +1,12 @@
-%% Run delta parameter sweep on simulated data 
-
-% Note: Running CVX
+%% DESCRIPTION: Run delta parameter sweep on simulated data 
+% Also plot outputs, update data with delta
+% Note: Runs CVX
 
 % DEFINE FIXED PARAMS PER SUBJECT
 loc = [];
 dest = [];
-N = 3000; 
-numrepeats = 10; % number of times to recalculate MSE
+N = 300; 
+numrepeats = 1; % number of times to recalculate MSE
 percent2drop = 25; % percent of data allocated to testing dataset ie 75/25 crossvalidation
 maxdegree = 3;
 maxperiod = 120;
@@ -33,25 +33,23 @@ for p = 1:length(subjects)
     
     % Building the dct basis can be slow if N is large, good to do outside loop
     [f_k, desiredperioddays] = frequency_sampling(N,maxperiod, minperiod, dt, sampletype);
-    [dct_basis, scalefactor] = DCT2_basis(N, f_k); % making the basis takes a long time. want to pre-define it before running BPDN for loops and loops 
+    [dct_basis, scalefactor] = DCT2_basis(N, f_k); 
+    % Making the basis takes a long time so want to pre-define it before running BPDN for loops and loops 
     [poly_basis] = polynomial_basis(N, maxdegree);
 
-    MSEpersamp = [];
-    Xspersamp = [];
-    zspersamp = [];
-%     sigpeakspersamp = [];
-%     xpercentpersamp = [];
-%     zpercentpersamp = [];
-    measureddatapersamp = [];
-    tpersamp = [];
-    phipersamp = [];
-    numsamps = [];
-    training_md_persamp = [];
-    training_t_persamp = [];
-    training_phi_persamp = []; 
-    testing_md_persamp = [];
-    testing_t_persamp = [];
-    testing_phi_persamp = [];
+    MSEpersamp = zeros(length(sampperdays)); 
+    Xspersamp = zeros(length(sampperdays)); 
+    zspersamp = zeros(length(sampperdays)); 
+    measureddatapersamp = zeros(length(sampperdays)); 
+    tpersamp = zeros(length(sampperdays));
+    phipersamp = zeros(length(sampperdays)); 
+    numsamps = zeros(length(sampperdays));
+    training_md_persamp = zeros(length(sampperdays)); 
+    training_t_persamp = zeros(length(sampperdays));
+    training_phi_persamp = zeros(length(sampperdays)); 
+    testing_md_persamp = zeros(length(sampperdays)); 
+    testing_t_persamp = zeros(length(sampperdays)); 
+    testing_phi_persamp = zeros(length(sampperdays));
     
     for s = 1:length(sampperdays)
         
@@ -63,17 +61,14 @@ for p = 1:length(subjects)
        
         % Initialize variables 
         MSE = zeros(length(deltas), numrepeats);
-%         sigpeaks = zeros(length(deltas), numrepeats);
         xs = zeros(length(deltas),numrepeats,N);
         zs = zeros(length(deltas),numrepeats, maxdegree+1);
-%         xpercents = zeros(length(deltas),numrepeats,N);
-%         zpercents = zeros(length(deltas),numrepeats, maxdegree+1);
         
-        parfor dd = 1: length(deltas)
+        for dd = 1: length(deltas)
 
             delta = deltas(dd);
 
-            for nn = 1: numrepeats
+            parfor nn = 1: numrepeats
 
                 % Training data
                 measureddata = training_md(nn,:);
@@ -85,19 +80,11 @@ for p = 1:length(subjects)
                 t_missed = testing_t(nn,:);
                 phi_missed = testing_phi(nn,:);
 
-                %figure;plot(phi_init,measureddata_init,'o');hold on;plot(phi,
-                %measureddata,'*');hold on;plot(phi_missed,measured_missed,'x') %
-                %to visualize for debugging
-
                 % Run BPDN
                 [x, z, ~, ~, ~, ~] = BPDN(delta, measureddata', phi, dct_basis, poly_basis);
-%                 [x, xreshuffled, xpercentiles, z, zreshuffled, zpercentiles, reshuff_optval] = BPDN_wReshuffling_short_notparallel(delta, measureddata', phi, dct_basis, poly_basis)
-%                 sigpeaks(dd,nn) = length(find(xpercentiles > 99));
                 [reconsig] = BPDN_reconsig(f_k, x,scalefactor, maxdegree, z, t_full);
                 xs(dd,nn,:) = x;
                 zs(dd,nn,:) = z;
-%                 xpercents(dd,nn,:) = xpercentiles;
-%                 zpercents(dd,nn,:) = zpercentiles;
                 
                 % Get missed samples from reconstruction
                 measured_missed_recon = reconsig(phi_missed); 
@@ -112,9 +99,6 @@ for p = 1:length(subjects)
         MSEpersamp{s} = MSE;
         Xspersamp{s} = xs;
         zspersamp{s} = zs;
-%         sigpeakspersamp{s} = sigpeaks;
-%         xpercentpersamp{s} = xpercents;
-%         zpercentpersamp{s} = zpercents;
         measureddatapersamp{s} = measureddata_init;
         tpersamp{s} = t_init;
         phipersamp{s} = phi_init;
@@ -136,9 +120,6 @@ for p = 1:length(subjects)
     deltaselection.numsamps = numsamps;
     deltaselection.note = 'Repeated cross validation for each combo of delta and sample density (number of samples). Each cell corresponds to cross validation MSE vs delta for a particular density';
     deltaselection.MSE = MSEpersamp;
-%     deltaselection.sigpeakspersamp = sigpeakspersamp;
-%     deltaselection.xpercentpersamp = xpercentpersamp;
-%     deltaselection.zpercentpersamp = zpercentpersamp;
     deltaselection.N = N;
     deltaselection.dt = dt;
     deltaselection.measuredata_init = measureddatapersamp;
@@ -182,8 +163,6 @@ for i = 1:length(subjects)
     
     subplot(1,length(subjects),i)
     subject = subjects{i};
-   
-%     filename = strcat('P:\Personal\Irena\BPDN_methods_paper\realdata\',subject,'\deltaselection\MSE_2D_DataDuration12_PercentDrop25_repeats10_N3000_numsamp180   360   720  1080  1440  1800.mat');
     filename =  strcat(dest,subject,'/deltaselection/MSE_2D_PercentDrop',num2str(percent2drop),'_repeats',num2str(numrepeats),'_N',num2str(N),'_numsamp',num2str(numsamps),'.mat');
     load(filename);
     
@@ -195,8 +174,7 @@ for i = 1:length(subjects)
         ySEM = std(dat,0,1)/sqrt(size(dat,1));   % Compute ‘Standard Error Of The Mean’ Of All Experiments At Each Value Of ‘x’
         CI95 = tinv([0.025 0.975], (size(dat,1)-1)); % Calculate 95% Probability Intervals Of t-Distribution
         yCI95 = bsxfun(@times, ySEM, CI95(:)); % Calculate 95% Confidence Intervals Of All Experiments At Each Value Of ‘x’
-
-        %plot(x, yCI95+yMean, 'Color','blue') % Plot 95% Confidence Intervals Of All Experiments
+    
         CIs = yCI95+yMean;
         curve1 = CIs(1,:);
         curve2 = CIs(2,:);
@@ -226,4 +204,3 @@ load(filename);
 deltaselection.delta = []; 
 
 save(filename,'deltaselection');
-
