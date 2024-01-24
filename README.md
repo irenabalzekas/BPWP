@@ -29,3 +29,7 @@ Contents:
 12. RunModel_script: Script to run BPDN on simulated data with optimal delta parameter, test output for significance, plot overall outputs
 13. BPDN_wreshuffling_short: Function to calculate percentiles of BPDN DCT coefficients based on distribution of outputs from re-shuffled data 
 14. BPDN_cwt2findcycles: Function to run CWT (on continuous data) and identify cycle peaks
+15. BPDN_getPercentile: Function to compare output with reference distribution and compare percentiles
+16. BPWPMethodsPaper_CodeWithDocumentation: Script capturing code and analysis conducted to generate each figure in the manuscript
+
+Please contact the author for assistance if needed.
