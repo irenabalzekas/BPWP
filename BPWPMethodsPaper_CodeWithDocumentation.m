@@ -10,6 +10,13 @@
 % publication accordingly. 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Note re data availability:
+
+% Original, raw IED rate data (one hour spike rate updated every 20
+% minutes) for each participant are available in the data folder
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parameter sweeps
 
 % SCRIPT NAME: BPDN_crossval_script_parallel_2D_5050
@@ -35,19 +42,19 @@ for p = 1:length(subjects)
     subject = subjects{p};
 
     % LOAD DATA
-%     filename = strcat('/mnt/eplab/Personal/Irena/RCS/fromdashboard/',subject,'/periodicity/',subject,'_periodicities_spikeseries_left_nozscore.csv');
-    filename = strcat('P:\Personal\Irena\RCS\fromdashboard\',subject,'\periodicity\',subject,'_periodicities_spikeseries_left_nozscore.csv');
-
-    data = readtable(filename);  
-%     if strcmp(subject,'M5') % get rid of M5's early drop
-%         data = data(82:end,:);
-%     end
-    signal = data.spikes_interp';
-    time = (data.start_uutc./10^6)'; % raw data timestamps were in milliseconds
+    filename = strcat('P:\Personal\Irena\Git\BPDNWP_Git2023\data\',subject,'\rawdata.mat'); % Load raw data (IED rate timeseries). Note: Raw data have been included/saved for online access in the "deltaselection" struct for each participant. Along with the outputs of this section's parameter sweeps. 
+    load(filename)  
+    
+    signal = data.signal;
+    time = data.time;
+    
+    % if any preprocessing/standardization of data length is required 
+    %time = (data.start_uutc./10^6)'; % raw data timestamps were in milliseconds
     % cut time down to specified duration
-    indmax = round((monthsdata * 30 *24 *60 *60) / (time(2) - time(1))); 
-    signal = signal(1:indmax);
-    time = time(1:indmax);
+    %indmax = round((monthsdata * 30 *24 *60 *60) / (time(2) - time(1))); 
+    %signal = signal(1:indmax);
+    %time = time(1:indmax);
+    
     dt = round((max(time) - min(time))) / (N-1);
     t_full = 1:N;
     
